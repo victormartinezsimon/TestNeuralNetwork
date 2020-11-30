@@ -207,4 +207,65 @@ public class NeuralNetwork
     }
 
 
+    public float GetBiasValue(int layerIdx, int neuronIdx)
+    {
+        if(layerIdx < 0 || layerIdx >= _layersSize.Count)
+        {
+            return 0;
+        }
+        if(neuronIdx < 0 || neuronIdx >= _layersSize[layerIdx])
+        {
+            return 0;
+        }
+        return _biases[layerIdx][neuronIdx];
+    }
+
+    public void SetBiasValue(int layerIdx, int neuronIdx, int value)
+    {
+        if (layerIdx < 0 || layerIdx >= _layersSize.Count)
+        {
+            return;
+        }
+        if (neuronIdx < 0 || neuronIdx >= _layersSize[layerIdx])
+        {
+            return;
+        }
+        _biases[layerIdx][neuronIdx] = value;
+    }
+
+    public float GetWeight(int layerIdx, int neuronIdx, int neuronIdxPrevious)
+    {
+        if (layerIdx < 0 || layerIdx >= _layersSize.Count)
+        {
+            return 0;
+        }
+        if (neuronIdx < 0 || neuronIdx >= _layersSize[layerIdx])
+        {
+            return 0;
+        }
+        if(neuronIdxPrevious < 0 || neuronIdxPrevious >= _layersSize[layerIdx - 1])
+        {
+            return 0;
+        }
+
+        return _weights[layerIdx][neuronIdx][neuronIdxPrevious];
+    }
+
+    public void SetWeight(int layerIdx, int neuronIdx, int neuronIdxPrevious, float value)
+    {
+        if (layerIdx < 0 || layerIdx >= _layersSize.Count)
+        {
+            return;
+        }
+        if (neuronIdx < 0 || neuronIdx >= _layersSize[layerIdx])
+        {
+            return;
+        }
+        if (neuronIdxPrevious < 0 || neuronIdxPrevious >= _layersSize[layerIdx - 1])
+        {
+            return;
+        }
+
+        _weights[layerIdx][neuronIdx][neuronIdxPrevious] = value;
+    }
 }
