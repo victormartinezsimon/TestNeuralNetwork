@@ -87,7 +87,7 @@ public class NeuralNetwork
         }
     }
 
-    public List<float> GeValue(List<float> input)
+    public List<float> GetValue(List<float> input)
     {
         List<float> result = new List<float>();
 
