@@ -13,7 +13,7 @@ public class Chromosome : MonoBehaviour
     private float timeStart;
     int _totalCheckpoints = 0;
     private bool running = false;
-
+    private int ID;
 
     void Start()
     {
@@ -53,15 +53,15 @@ public class Chromosome : MonoBehaviour
 
         List<float> result = _nw.GetValue(distances);
         
-        //transform.Rotate(0, result[0] * rotationMultiplier, 0, Space.World);//controls the cars movement
-        //transform.position += this.transform.right * result[1] * speed;//controls the cars turning
+        transform.Rotate(0, result[0] * rotationMultiplier, 0, Space.World);//controls the cars movement
+        transform.position += this.transform.right * result[1] * speed;//controls the cars turning
     }
 
     void OnCollisionEnter(Collision collision)
     {
         //finish the work
-        float diffTime = System.DateTime.Now.Millisecond - timeStart;
-        _geneticAlg.TaskEnded(_totalCheckpoints, diffTime);
+        float diffTime = System.DateTime.Now.Ticks - timeStart;
+        _geneticAlg.TaskEnded(_totalCheckpoints, diffTime, ID);
     }
 
     private void OnTriggerExit(Collider other)
@@ -69,9 +69,10 @@ public class Chromosome : MonoBehaviour
         ++_totalCheckpoints;//improve, for example, check the id is increased(no backwards)
     }
 
-    public void RunAgent()
+    public void RunAgent(int id)
     {
-        timeStart = System.DateTime.Now.Millisecond;
+        this.ID = id;
+        timeStart = System.DateTime.Now.Ticks;
         running = true;
     }
 }
