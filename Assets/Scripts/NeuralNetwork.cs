@@ -220,7 +220,7 @@ public class NeuralNetwork
         return _biases[layerIdx][neuronIdx];
     }
 
-    public void SetBiasValue(int layerIdx, int neuronIdx, int value)
+    public void SetBiasValue(int layerIdx, int neuronIdx, float value)
     {
         if (layerIdx < 0 || layerIdx >= _layersSize.Count)
         {
@@ -267,5 +267,30 @@ public class NeuralNetwork
         }
 
         _weights[layerIdx][neuronIdx][neuronIdxPrevious] = value;
+    }
+
+    public List<float> ToList()
+    {
+        List<float> toReturn = new List<float>();
+
+        for (int layer = 1; layer < _layersSize.Count; ++layer)
+        {
+            for (int neuronIdx = 0; neuronIdx < _layersSize[layer]; ++neuronIdx)
+            {
+                //bias
+                {
+                    toReturn.Add(_biases[layer][neuronIdx]);
+                }
+
+                for (int neuronIdxPrevious = 0; neuronIdxPrevious < _layersSize[layer - 1]; ++neuronIdxPrevious)
+                {
+
+                    toReturn.Add(_weights[layer][neuronIdx][neuronIdxPrevious]);
+                }
+
+            }
+        }
+
+        return toReturn;
     }
 }

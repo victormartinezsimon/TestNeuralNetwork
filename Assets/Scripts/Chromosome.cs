@@ -15,11 +15,12 @@ public class Chromosome : MonoBehaviour
     private bool running = false;
     private int ID;
 
-    void Start()
+    int count = 0;
+
+    public void Init(List<int> neuralNetwork)
     {
         _geneticAlg = GetComponentInParent<GeneticAlg>();
-        List<int> numNN = new List<int>() { 5, 4, 3 };
-        _nw = new NeuralNetwork(numNN);
+        _nw = new NeuralNetwork(neuralNetwork);
     }
 
     // Update is called once per frame
@@ -28,6 +29,11 @@ public class Chromosome : MonoBehaviour
         if (running)
         {
             CalculateNextPosition();
+            if(count == 10)
+            {
+                FinishTraining();
+            }
+            ++count;
         }
     }
 
@@ -60,10 +66,15 @@ public class Chromosome : MonoBehaviour
     void OnCollisionEnter(Collision collision)
     {
         //finish the work
+        FinishTraining();
+    }
+
+    private void FinishTraining()
+    {
+        running = false;
         float diffTime = System.DateTime.Now.Ticks - timeStart;
         _geneticAlg.TaskEnded(_totalCheckpoints, diffTime, ID);
     }
-
     private void OnTriggerExit(Collider other)
     {
         ++_totalCheckpoints;//improve, for example, check the id is increased(no backwards)
@@ -74,5 +85,10 @@ public class Chromosome : MonoBehaviour
         this.ID = id;
         timeStart = System.DateTime.Now.Ticks;
         running = true;
+    }
+
+    public NeuralNetwork GetNeuralNetwork()
+    {
+        return _nw;
     }
 }

@@ -339,7 +339,7 @@ GameObject:
   - component: {fileID: 1795219740}
   - component: {fileID: 1795219739}
   m_Layer: 0
-  m_Name: Test
+  m_Name: Trainig
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -357,9 +357,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7618de34aee70e545ad84ef487ff3d1a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _car: {fileID: 3347174223193345272, guid: 7dbcc3eacde9a224fa4072f13b2e651d, type: 3}
-  _totalCars: 1
+  _carToCopy: {fileID: 3347174223193345272, guid: 7dbcc3eacde9a224fa4072f13b2e651d, type: 3}
+  _totalCars: 2
   _startPosition: {fileID: 1598978999}
+  randomMutation: 0.1
+  _sizeNeuralNetwork: 050000000400000003000000
+  numCarsToMerge: 10
 --- !u!4 &1795219740
 Transform:
   m_ObjectHideFlags: 0
