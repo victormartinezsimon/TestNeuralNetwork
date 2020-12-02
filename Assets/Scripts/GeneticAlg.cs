@@ -12,6 +12,7 @@ public class GeneticAlg : MonoBehaviour
     public float randomMutation = 0.1f;
     public List<int> _sizeNeuralNetwork;
     public int numCarsToMerge = 10;
+    public int totalCheckPoints = 10;
 
     private Mutex mut = new Mutex();
 
@@ -48,7 +49,7 @@ public class GeneticAlg : MonoBehaviour
             go.transform.position = _startPosition.position;
             go.transform.rotation = _startPosition.rotation;
             go.transform.parent = this.transform;
-            go.GetComponent<Chromosome>().Init(_sizeNeuralNetwork);
+            go.GetComponent<Chromosome>().Init(_sizeNeuralNetwork, totalCheckPoints);
             _cars.Add(go);
         }
         _infoTraining = new List<car_info>();
@@ -105,8 +106,18 @@ public class GeneticAlg : MonoBehaviour
             if(ci1.totalCheckpoints < ci2.totalCheckpoints) { return -1; }
             if(ci1.totalCheckpoints == ci2.totalCheckpoints)
             {
-                if(ci1.totalTime < ci2.totalTime) { return 1; }
-                if(ci1.totalTime > ci2.totalTime) { return -1; }
+                if(ci1.totalCheckpoints == 0)
+                {
+                    if (ci1.totalTime < ci2.totalTime) { return -1; }
+                    if (ci1.totalTime > ci2.totalTime) { return 1; }
+                }
+                else
+                {
+                    if (ci1.totalTime < ci2.totalTime) { return 1; }
+                    if (ci1.totalTime > ci2.totalTime) { return -1; }
+                }
+               
+
             }
             return 0;
         }
@@ -119,8 +130,8 @@ public class GeneticAlg : MonoBehaviour
     {
         for(int carIdx = 0; carIdx < _totalCars; ++carIdx)
         {
-            int firstCar = 0; //UnityEngine.Random.Range(0, numCarsToMerge);
-            int secondCar = 1;// UnityEngine.Random.Range(0, numCarsToMerge);
+            int firstCar = UnityEngine.Random.Range(0, numCarsToMerge);
+            int secondCar =  UnityEngine.Random.Range(0, numCarsToMerge);
 
             MergeCars(_infoTraining[firstCar]._neuralNetwork, _infoTraining[secondCar]._neuralNetwork, carIdx);
         }
