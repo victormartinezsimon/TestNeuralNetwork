@@ -18,6 +18,12 @@ public class Chromosome : MonoBehaviour
 
     private int lastCheckpoint = -1;
     private int _totalCheckpoints = 10;
+    private Rigidbody _rigidBody;
+
+    private void Start()
+    {
+        _rigidBody = GetComponent<Rigidbody>();
+    }
 
     public void Init(List<int> neuralNetwork, int totalChecpoints)
     {
@@ -56,10 +62,13 @@ public class Chromosome : MonoBehaviour
         }
 
         List<float> result = _nw.GetValue(distances);
-        
+
+        Vector3 rotation = _rigidBody.rotation.eulerAngles;
+        rotation += result[0] * Vector3.forward;
+        _rigidBody.rotation = Quaternion.Euler(rotation);
+
+        _rigidBody.position += (this.transform.right * result[1] * speed);
         //GetComponent<Rigidbody>().MoveRotation(transform.Rotate(0, result[0] * rotationMultiplier, 0, Space.World);//controls the cars movement
-        GetComponent<Rigidbody>().position +=(this.transform.right * result[1] * speed);
-        //transform.position += ;//controls the cars turning
     }
 
     void OnCollisionEnter(Collision collision)
@@ -88,6 +97,10 @@ public class Chromosome : MonoBehaviour
                 {
                     FinishTraining();
                 }
+            }
+            else
+            {
+                FinishTraining();
             }
         }
     }

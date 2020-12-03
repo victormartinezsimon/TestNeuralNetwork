@@ -358,7 +358,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 4294967295
   m_IsActive: 1
 --- !u!4 &346731610
 Transform:
@@ -453,7 +453,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 4294967295
   m_IsActive: 1
 --- !u!4 &435276143
 Transform:
@@ -1090,7 +1090,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 4294967295
   m_IsActive: 1
 --- !u!4 &995359105
 Transform:
@@ -1185,7 +1185,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 4294967295
   m_IsActive: 1
 --- !u!4 &1141959764
 Transform:
@@ -1645,7 +1645,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 4294967295
   m_IsActive: 1
 --- !u!4 &1532262370
 Transform:
@@ -1740,7 +1740,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 4294967295
   m_IsActive: 1
 --- !u!4 &1595510995
 Transform:
@@ -1865,7 +1865,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 4294967295
   m_IsActive: 1
 --- !u!4 &1630014566
 Transform:
@@ -2069,7 +2069,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 4294967295
   m_IsActive: 1
 --- !u!4 &1723260653
 Transform:
@@ -2177,12 +2177,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _carToCopy: {fileID: 3347174223193345272, guid: 7dbcc3eacde9a224fa4072f13b2e651d, type: 3}
-  _totalCars: 20
+  _totalCars: 100
   _startPosition: {fileID: 1598978999}
   randomMutation: 0.1
-  _sizeNeuralNetwork: 050000000400000003000000
+  _sizeNeuralNetwork: 050000000300000002000000
   numCarsToMerge: 2
   totalCheckPoints: 10
+  _colorRun: {r: 0.14637871, g: 0.8679245, b: 0.12691349, a: 0}
+  _colorStop: {r: 0.9433962, g: 0.09344962, b: 0.09344962, a: 0}
 --- !u!4 &1795219740
 Transform:
   m_ObjectHideFlags: 0

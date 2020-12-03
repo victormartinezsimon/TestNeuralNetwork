@@ -13,6 +13,8 @@ public class GeneticAlg : MonoBehaviour
     public List<int> _sizeNeuralNetwork;
     public int numCarsToMerge = 10;
     public int totalCheckPoints = 10;
+    public Color _colorRun;
+    public Color _colorStop;
 
     private Mutex mut = new Mutex();
 
@@ -73,6 +75,9 @@ public class GeneticAlg : MonoBehaviour
         _infoTraining.Clear();
         for (int i = 0; i < _totalCars; ++i)
         {
+            _cars[i].transform.position = _startPosition.position;
+            _cars[i].transform.rotation = _startPosition.rotation;
+            _cars[i].GetComponent<Renderer>().material.color = _colorRun;
             _cars[i].GetComponent<Chromosome>().RunAgent(i);
         }
     }
@@ -84,6 +89,7 @@ public class GeneticAlg : MonoBehaviour
         it.totalCheckpoints = totalCheckpoints;
         it.totalTime = time;
         it._neuralNetwork = new List<float>(_cars[id].GetComponent<Chromosome>().GetNeuralNetwork().ToList());
+        _cars[id].GetComponent<Renderer>().material.color = _colorStop;
 
         mut.WaitOne();
             _infoTraining.Add(it);
