@@ -13,7 +13,6 @@ public class NeuralNetwork
 
     public NeuralNetwork(List<int> layersSize)
     {
-        UnityEngine.Random.InitState(System.DateTime.Now.Millisecond);//init random
         this._layersSize = layersSize;
         InitNeurons();
         InitBiases();

@@ -74,16 +74,19 @@ public class Chromosome : MonoBehaviour
     void OnCollisionEnter(Collision collision)
     {
         //finish the work
-        FinishTraining();
+        FinishTraining(false);
     }
 
-    private void FinishTraining()
+    public void FinishTraining(bool forze)
     {
-        running = false;
-        float diffTime = System.DateTime.Now.Ticks - timeStart;
-        _geneticAlg.TaskEnded(_checkPointsPassed, diffTime, ID);
+        if(running)
+        {
+            running = false;
+            float diffTime = System.DateTime.Now.Ticks - timeStart;
+            _geneticAlg.TaskEnded(_checkPointsPassed, diffTime, ID);
+        }
     }
-    private void OnTriggerExit(Collider other)
+    private void OnTriggerEnter(Collider other)
     {
         Checkpoint ch = other.GetComponent<Checkpoint>();
         if(ch != null)
@@ -95,12 +98,12 @@ public class Chromosome : MonoBehaviour
 
                 if(_checkPointsPassed >= _totalCheckpoints)
                 {
-                    FinishTraining();
+                    FinishTraining(false);
                 }
             }
             else
             {
-                FinishTraining();
+                FinishTraining(false);
             }
         }
     }

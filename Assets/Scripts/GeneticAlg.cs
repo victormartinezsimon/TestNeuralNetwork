@@ -15,6 +15,8 @@ public class GeneticAlg : MonoBehaviour
     public int totalCheckPoints = 10;
     public Color _colorRun;
     public Color _colorStop;
+    public int maxTimeout = 60;
+    private float _timeStart;
 
     private Mutex mut = new Mutex();
 
@@ -29,15 +31,20 @@ public class GeneticAlg : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        UnityEngine.Random.InitState(System.DateTime.Now.Millisecond);//init random
         CreateCars();
         ResetCars();
+        StartTraining();
     }
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.A))
+        if(Time.time > _timeStart + maxTimeout)
         {
-            StartTraining();
+            for(int car = 0; car < _totalCars; ++car)
+            {
+                _cars[car].GetComponent<Chromosome>().FinishTraining(true);
+            }
         }
     }
 
@@ -80,6 +87,7 @@ public class GeneticAlg : MonoBehaviour
             _cars[i].GetComponent<Renderer>().material.color = _colorRun;
             _cars[i].GetComponent<Chromosome>().RunAgent(i);
         }
+        _timeStart = Time.time;
     }
 
     public void TaskEnded(float totalCheckpoints, float time, int id)
@@ -108,19 +116,19 @@ public class GeneticAlg : MonoBehaviour
     {
         _infoTraining.Sort((ci1, ci2) =>
         {
-            if(ci1.totalCheckpoints > ci2.totalCheckpoints) { return 1; }
-            if(ci1.totalCheckpoints < ci2.totalCheckpoints) { return -1; }
+            if(ci1.totalCheckpoints > ci2.totalCheckpoints) { return -1; }
+            if(ci1.totalCheckpoints < ci2.totalCheckpoints) { return 1; }
             if(ci1.totalCheckpoints == ci2.totalCheckpoints)
             {
                 if(ci1.totalCheckpoints == 0)
                 {
-                    if (ci1.totalTime < ci2.totalTime) { return -1; }
-                    if (ci1.totalTime > ci2.totalTime) { return 1; }
+                    if (ci1.totalTime < ci2.totalTime) { return 1; }
+                    if (ci1.totalTime > ci2.totalTime) { return -1; }
                 }
                 else
                 {
-                    if (ci1.totalTime < ci2.totalTime) { return 1; }
-                    if (ci1.totalTime > ci2.totalTime) { return -1; }
+                    if (ci1.totalTime < ci2.totalTime) { return -1; }
+                    if (ci1.totalTime > ci2.totalTime) { return 1; }
                 }
                
 
