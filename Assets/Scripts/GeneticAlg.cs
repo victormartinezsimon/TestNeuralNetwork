@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GeneticAlg : MonoBehaviour
 {
@@ -15,24 +16,23 @@ public class GeneticAlg : MonoBehaviour
     public int totalCheckPoints = 10;
     public Color _colorRun;
     public Color _colorStop;
+    public Color _notSelected;
+    public Color _colorBest;
     public int maxTimeout = 60;
-    private float _timeStart;
+    private float _timeStartTimeOut;
+    public Text _textoInf;
+    private List<Chromosome> _listCromosomes;
+    int currentBestCar = -1;
 
     private Mutex mut = new Mutex();
 
     private struct car_info{
         public int id;
         public List<float> _neuralNetwork;
-        public float _score;
-        public void calculateScore(int _totalch, float totalTime, int totalCheckPoints, int maxTimeOut)
-        {
-            _score = _totalch;
-
-            if(_totalch > totalCheckPoints)
-            {
-                _score += maxTimeOut - totalTime;
-            }
-        }
+        public float _distance;
+        public float _time;
+        public float _distanceAcum;
+        public void SetDistanceAcum(float v) { _distanceAcum = v; }
     };
     private List<car_info> _infoTraining;
 
@@ -47,18 +47,50 @@ public class GeneticAlg : MonoBehaviour
 
     private void Update()
     {
-        if(Time.time > _timeStart + maxTimeout)
+        WriteInfo();
+        if(Time.time > _timeStartTimeOut + maxTimeout || Input.GetKeyDown(KeyCode.S))
         {
             for(int car = 0; car < _totalCars; ++car)
             {
-                _cars[car].GetComponent<Chromosome>().FinishTraining(true);
+                _listCromosomes[car].FinishTraining(true);
             }
         }
+
+    }
+
+    private void WriteInfo()
+    {
+        float bestDistance = -1;
+        int bestIdx = 0;
+
+        for(int car = 0; car < _totalCars; ++car)
+        {
+            if (_listCromosomes[car]._distanceAcum > bestDistance)
+            {
+                bestIdx = car;
+                bestDistance = _listCromosomes[car]._distanceAcum;
+            }
+        }
+        if(bestIdx != currentBestCar)
+        {
+            currentBestCar = bestIdx;
+            _timeStartTimeOut = Time.time;
+        }
+        else
+        {
+            if(_listCromosomes[currentBestCar].running)
+            {
+                _timeStartTimeOut = Time.time;
+            }
+        }
+
+        _textoInf.text = "best car[" + bestIdx + "] => " + bestDistance + " timeout: "+ (int)(Time.time - _timeStartTimeOut);
     }
 
     private void CreateCars()
     {
         _cars = new List<GameObject>();
+        _listCromosomes = new List<Chromosome>();
         for (int i = 0; i < _totalCars; ++i)
         {
             GameObject go =  Instantiate<GameObject>(_carToCopy);
@@ -66,7 +98,8 @@ public class GeneticAlg : MonoBehaviour
             go.transform.position = _startPosition.position;
             go.transform.rotation = _startPosition.rotation;
             go.transform.parent = this.transform;
-            go.GetComponent<Chromosome>().Init(_sizeNeuralNetwork, totalCheckPoints);
+            _listCromosomes.Add(go.GetComponent<Chromosome>());
+            _listCromosomes[i].Init(_sizeNeuralNetwork, totalCheckPoints);
             _cars.Add(go);
         }
         _infoTraining = new List<car_info>();
@@ -93,17 +126,17 @@ public class GeneticAlg : MonoBehaviour
             _cars[i].transform.position = _startPosition.position;
             _cars[i].transform.rotation = _startPosition.rotation;
             _cars[i].GetComponent<Renderer>().material.color = _colorRun;
-            _cars[i].GetComponent<Chromosome>().RunAgent(i);
+            _listCromosomes[i].RunAgent(i);
         }
-        _timeStart = Time.time;
+        _timeStartTimeOut = Time.time;
     }
 
-    public void TaskEnded(int totalCh, float time, int id)
+    public void TaskEnded(float distance, float time, int id)
     {
         car_info it = new car_info();
         it.id = id;
-        it._neuralNetwork = new List<float>(_cars[id].GetComponent<Chromosome>().GetNeuralNetwork().ToList());
-        it.calculateScore(totalCh, time, this.totalCheckPoints, this.maxTimeout);
+        it._distance = distance;
+        it._neuralNetwork = new List<float>(_listCromosomes[id].GetNeuralNetwork().ToList());
         _cars[id].GetComponent<Renderer>().material.color = _colorStop;
 
         mut.WaitOne();
@@ -115,36 +148,83 @@ public class GeneticAlg : MonoBehaviour
             SortBestCars();
             MergeCars();
             MutateCars();
-            StartTraining();
+            StartCoroutine(ResetartTraining());
         }
+    }
+
+    private IEnumerator ResetartTraining()
+    {
+        yield return new WaitForSeconds(2);
+        StartTraining();
     }
 
     private void SortBestCars()
     {
         _infoTraining.Sort((ci1, ci2) =>
         {
-            return ci1._score.CompareTo(ci2._score);
+            return ci1._distance.CompareTo(ci2._distance);
         }
         );
 
         _infoTraining.Reverse();
+
+        for(int i = numCarsToMerge; i < _totalCars; ++i )
+        {
+            _cars[_infoTraining[i].id].GetComponent<Renderer>().material.color = _notSelected;
+        }
+
         _infoTraining.RemoveRange(numCarsToMerge, _totalCars - numCarsToMerge);
+
+        float acum = 0;
+        for(int i =0; i < numCarsToMerge; ++i)
+        {
+            acum += _infoTraining[i]._distance;
+            _infoTraining[i].SetDistanceAcum(acum);
+        }
     }
 
     private void MergeCars()
     {
         for(int carIdx = 0; carIdx < _totalCars; ++carIdx)
         {
-            int firstCar = UnityEngine.Random.Range(0, numCarsToMerge);
-            int secondCar =  UnityEngine.Random.Range(0, numCarsToMerge);
+            GetCarsToMerge(out int firstCar, out int secondCar);
 
             MergeCars(_infoTraining[firstCar]._neuralNetwork, _infoTraining[secondCar]._neuralNetwork, carIdx);
         }
     }
 
+    private void GetCarsToMerge(out int car1, out int car2)
+    {
+        float maxRandom = _infoTraining[_infoTraining.Count - 1]._distanceAcum;
+        car1 = 0;
+        car2 = 0;
+
+        for (int soluition = 0; soluition < 2; ++soluition)
+        {
+            float random = UnityEngine.Random.Range(0, maxRandom);
+            float acum = 0;
+            
+            for (int car = 0; car < numCarsToMerge; ++car)
+            {
+                acum += _infoTraining[car]._distance;
+                if(acum <= random)
+                {
+                    if(soluition == 0)
+                    {
+                        car1 = car;
+                    }
+                    else
+                    {
+                        car2 = car;
+                    }
+                }
+            }
+        }
+    }
+
     private void MergeCars(List<float> nn_first, List<float> nn_second, int carIdx)
     {
-        NeuralNetwork nn_toWrite = _cars[carIdx].GetComponent<Chromosome>().GetNeuralNetwork();
+        NeuralNetwork nn_toWrite = _listCromosomes[carIdx].GetNeuralNetwork();
 
         int indexList = 0;
 
@@ -184,7 +264,7 @@ public class GeneticAlg : MonoBehaviour
     {
         for (int carIdx = 0; carIdx < _totalCars; ++carIdx)
         {
-            NeuralNetwork nn = _cars[carIdx].GetComponent<Chromosome>().GetNeuralNetwork();
+            NeuralNetwork nn = _listCromosomes[carIdx].GetNeuralNetwork();
             for (int layer = 1; layer < _sizeNeuralNetwork.Count; ++layer)
             {
                 for (int neuronIdx = 0; neuronIdx < _sizeNeuralNetwork[layer]; ++neuronIdx)

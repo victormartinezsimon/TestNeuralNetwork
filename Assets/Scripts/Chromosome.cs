@@ -11,10 +11,9 @@ public class Chromosome : MonoBehaviour
     GeneticAlg _geneticAlg;
     NeuralNetwork _nw;
     private float timeStart;
-    int _checkPointsPassed = 0;
-    private bool running = false;
+    public bool running = false;
     private int ID;
-
+    public float _distanceAcum = 0;
 
     private string lastCheckpoint ="";
     private Rigidbody _rigidBody;
@@ -66,6 +65,7 @@ public class Chromosome : MonoBehaviour
         _rigidBody.rotation = Quaternion.Euler(rotation);
 
         _rigidBody.position += (this.transform.right * result[1] * speed);
+        _distanceAcum += result[1] * speed;
     }
 
     void OnCollisionEnter(Collision collision)
@@ -80,7 +80,7 @@ public class Chromosome : MonoBehaviour
         {
             running = false;
             float diffTime = System.DateTime.Now.Ticks - timeStart;
-            _geneticAlg.TaskEnded(_checkPointsPassed, diffTime, ID);
+            _geneticAlg.TaskEnded(_distanceAcum, diffTime, ID);
         }
     }
     private void OnTriggerEnter(Collider other)
@@ -89,7 +89,6 @@ public class Chromosome : MonoBehaviour
         if(!ch.previous && lastCheckpoint.Length == 0)
         {
             //first checkpoint
-            ++_checkPointsPassed;
             lastCheckpoint = ch.transform.name;
             return;
         }
@@ -111,7 +110,6 @@ public class Chromosome : MonoBehaviour
         //here the ch have previous and lastcheckpoint have value
         if(ch.previous.transform.name.CompareTo(lastCheckpoint) == 0)
         {
-            ++_checkPointsPassed;
             lastCheckpoint = ch.transform.name;
             return;
         }
@@ -128,7 +126,7 @@ public class Chromosome : MonoBehaviour
         this.ID = id;
         timeStart = System.DateTime.Now.Ticks;
         running = true;
-        _checkPointsPassed = 0;
+        _distanceAcum = 0;
         lastCheckpoint = "";
     }
 
