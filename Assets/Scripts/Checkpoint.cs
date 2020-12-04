@@ -4,5 +4,6 @@ using UnityEngine;
 
 public class Checkpoint : MonoBehaviour
 {
-    public int ID;
+    public GameObject previous;
+    public GameObject next;
 }

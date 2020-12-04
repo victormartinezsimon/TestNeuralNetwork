@@ -16,8 +16,7 @@ public class Chromosome : MonoBehaviour
     private int ID;
 
 
-    private int lastCheckpoint = -1;
-    private int _totalCheckpoints = 10;
+    private string lastCheckpoint ="";
     private Rigidbody _rigidBody;
 
     private void Start()
@@ -29,7 +28,6 @@ public class Chromosome : MonoBehaviour
     {
         _geneticAlg = GetComponentInParent<GeneticAlg>();
         _nw = new NeuralNetwork(neuralNetwork);
-        this._totalCheckpoints = totalChecpoints;
     }
 
     // Update is called once per frame
@@ -68,7 +66,6 @@ public class Chromosome : MonoBehaviour
         _rigidBody.rotation = Quaternion.Euler(rotation);
 
         _rigidBody.position += (this.transform.right * result[1] * speed);
-        //GetComponent<Rigidbody>().MoveRotation(transform.Rotate(0, result[0] * rotationMultiplier, 0, Space.World);//controls the cars movement
     }
 
     void OnCollisionEnter(Collision collision)
@@ -89,22 +86,40 @@ public class Chromosome : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         Checkpoint ch = other.GetComponent<Checkpoint>();
-        if(ch != null)
+        if(!ch.previous && lastCheckpoint.Length == 0)
         {
-            if(ch.ID == lastCheckpoint +1)
-            {
-                ++_checkPointsPassed;
-                lastCheckpoint = ch.ID;
+            //first checkpoint
+            ++_checkPointsPassed;
+            lastCheckpoint = ch.transform.name;
+            return;
+        }
+      
+        if(ch.previous && lastCheckpoint.Length == 0)
+        {
+            //turn back before start
+            FinishTraining(false);
+            return;
+        }
 
-                if(_checkPointsPassed >= _totalCheckpoints)
-                {
-                    FinishTraining(false);
-                }
-            }
-            else
-            {
-                FinishTraining(false);
-            }
+        if (!ch.previous && lastCheckpoint.Length != 0)
+        {
+            //turn back before start or complete lap
+            FinishTraining(false);
+            return;
+        }
+
+        //here the ch have previous and lastcheckpoint have value
+        if(ch.previous.transform.name.CompareTo(lastCheckpoint) == 0)
+        {
+            ++_checkPointsPassed;
+            lastCheckpoint = ch.transform.name;
+            return;
+        }
+        else
+        {
+            //somtehing wrong, some chekcpoint skiped
+            FinishTraining(false);
+            return;
         }
     }
 
@@ -113,7 +128,8 @@ public class Chromosome : MonoBehaviour
         this.ID = id;
         timeStart = System.DateTime.Now.Ticks;
         running = true;
-        lastCheckpoint = -1;
+        _checkPointsPassed = 0;
+        lastCheckpoint = "";
     }
 
     public NeuralNetwork GetNeuralNetwork()

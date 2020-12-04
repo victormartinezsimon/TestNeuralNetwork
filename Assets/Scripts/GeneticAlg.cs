@@ -22,9 +22,17 @@ public class GeneticAlg : MonoBehaviour
 
     private struct car_info{
         public int id;
-        public float totalCheckpoints;
-        public float totalTime;
         public List<float> _neuralNetwork;
+        public float _score;
+        public void calculateScore(int _totalch, float totalTime, int totalCheckPoints, int maxTimeOut)
+        {
+            _score = _totalch;
+
+            if(_totalch > totalCheckPoints)
+            {
+                _score += maxTimeOut - totalTime;
+            }
+        }
     };
     private List<car_info> _infoTraining;
 
@@ -90,13 +98,12 @@ public class GeneticAlg : MonoBehaviour
         _timeStart = Time.time;
     }
 
-    public void TaskEnded(float totalCheckpoints, float time, int id)
+    public void TaskEnded(int totalCh, float time, int id)
     {
         car_info it = new car_info();
         it.id = id;
-        it.totalCheckpoints = totalCheckpoints;
-        it.totalTime = time;
         it._neuralNetwork = new List<float>(_cars[id].GetComponent<Chromosome>().GetNeuralNetwork().ToList());
+        it.calculateScore(totalCh, time, this.totalCheckPoints, this.maxTimeout);
         _cars[id].GetComponent<Renderer>().material.color = _colorStop;
 
         mut.WaitOne();
@@ -116,27 +123,11 @@ public class GeneticAlg : MonoBehaviour
     {
         _infoTraining.Sort((ci1, ci2) =>
         {
-            if(ci1.totalCheckpoints > ci2.totalCheckpoints) { return -1; }
-            if(ci1.totalCheckpoints < ci2.totalCheckpoints) { return 1; }
-            if(ci1.totalCheckpoints == ci2.totalCheckpoints)
-            {
-                if(ci1.totalCheckpoints == 0)
-                {
-                    if (ci1.totalTime < ci2.totalTime) { return 1; }
-                    if (ci1.totalTime > ci2.totalTime) { return -1; }
-                }
-                else
-                {
-                    if (ci1.totalTime < ci2.totalTime) { return -1; }
-                    if (ci1.totalTime > ci2.totalTime) { return 1; }
-                }
-               
-
-            }
-            return 0;
+            return ci1._score.CompareTo(ci2._score);
         }
         );
 
+        _infoTraining.Reverse();
         _infoTraining.RemoveRange(numCarsToMerge, _totalCars - numCarsToMerge);
     }
 
