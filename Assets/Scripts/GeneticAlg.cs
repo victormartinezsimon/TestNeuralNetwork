@@ -12,7 +12,6 @@ public class GeneticAlg : MonoBehaviour
     public Transform _startPosition;
     public float randomMutation = 0.1f;
     public List<int> _sizeNeuralNetwork;
-    public int numCarsToMerge = 10;
     public int totalCheckPoints = 10;
     public Color _colorRun;
     public Color _colorStop;
@@ -29,7 +28,7 @@ public class GeneticAlg : MonoBehaviour
     private struct car_info{
         public int id;
         public List<float> _neuralNetwork;
-        public float _distance;
+        public int _score;
         public float _time;
         public float _distanceAcum;
         public void SetDistanceAcum(float v) { _distanceAcum = v; }
@@ -65,10 +64,10 @@ public class GeneticAlg : MonoBehaviour
 
         for(int car = 0; car < _totalCars; ++car)
         {
-            if (_listCromosomes[car]._distanceAcum > bestDistance)
+            if (_listCromosomes[car]._score > bestDistance)
             {
                 bestIdx = car;
-                bestDistance = _listCromosomes[car]._distanceAcum;
+                bestDistance = _listCromosomes[car]._score;
             }
         }
         if(bestIdx != currentBestCar)
@@ -103,12 +102,7 @@ public class GeneticAlg : MonoBehaviour
             _cars.Add(go);
         }
         _infoTraining = new List<car_info>();
-        if(_totalCars < numCarsToMerge)
-        {
-            numCarsToMerge = _totalCars;
-        }
     }
-
     private void ResetCars()
     {
         for (int i = 0; i < _totalCars; ++i)
@@ -131,11 +125,11 @@ public class GeneticAlg : MonoBehaviour
         _timeStartTimeOut = Time.time;
     }
 
-    public void TaskEnded(float distance, float time, int id)
+    public void TaskEnded(int score, float time, int id)
     {
         car_info it = new car_info();
         it.id = id;
-        it._distance = distance;
+        it._score = score;
         it._neuralNetwork = new List<float>(_listCromosomes[id].GetNeuralNetwork().ToList());
         _cars[id].GetComponent<Renderer>().material.color = _colorStop;
 
@@ -162,23 +156,36 @@ public class GeneticAlg : MonoBehaviour
     {
         _infoTraining.Sort((ci1, ci2) =>
         {
-            return ci1._distance.CompareTo(ci2._distance);
+            return ci1._score.CompareTo(ci2._score);
         }
         );
 
         _infoTraining.Reverse();
 
-        for(int i = numCarsToMerge; i < _totalCars; ++i )
+        int bestScore = _infoTraining[0]._score;
+
+        int totalCarsToAnalyze = 0;
+
+        for(int i = 0; i < _totalCars; ++i)
+        {
+            if(_infoTraining[i]._score < bestScore -1)
+            {
+                break;
+            }
+            ++totalCarsToAnalyze;
+        }
+
+        for(int i = totalCarsToAnalyze; i < _totalCars; ++i )
         {
             _cars[_infoTraining[i].id].GetComponent<Renderer>().material.color = _notSelected;
         }
 
-        _infoTraining.RemoveRange(numCarsToMerge, _totalCars - numCarsToMerge);
+        _infoTraining.RemoveRange(totalCarsToAnalyze, _totalCars - totalCarsToAnalyze);
 
         float acum = 0;
-        for(int i =0; i < numCarsToMerge; ++i)
+        for(int i =0; i < totalCarsToAnalyze; ++i)
         {
-            acum += _infoTraining[i]._distance;
+            acum += _infoTraining[i]._score;
             _infoTraining[i].SetDistanceAcum(acum);
         }
     }
@@ -204,9 +211,9 @@ public class GeneticAlg : MonoBehaviour
             float random = UnityEngine.Random.Range(0, maxRandom);
             float acum = 0;
             
-            for (int car = 0; car < numCarsToMerge; ++car)
+            for (int car = 0; car < _infoTraining.Count; ++car)
             {
-                acum += _infoTraining[car]._distance;
+                acum += _infoTraining[car]._score;
                 if(acum <= random)
                 {
                     if(soluition == 0)
