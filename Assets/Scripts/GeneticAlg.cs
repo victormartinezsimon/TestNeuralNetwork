@@ -23,6 +23,8 @@ public class GeneticAlg : MonoBehaviour
     private List<Chromosome> _listCromosomes;
     int currentBestCar = -1;
 
+    public string _nameBest = "./best.txt";
+
     private Mutex mut = new Mutex();
 
     private struct car_info{
@@ -46,8 +48,7 @@ public class GeneticAlg : MonoBehaviour
 
     private void Update()
     {
-        WriteInfo();
-        if(Time.time > _timeStartTimeOut + maxTimeout || Input.GetKeyDown(KeyCode.S))
+        if(Time.time > _timeStartTimeOut + maxTimeout || Input.GetKeyDown(KeyCode.E))
         {
             for(int car = 0; car < _totalCars; ++car)
             {
@@ -55,6 +56,12 @@ public class GeneticAlg : MonoBehaviour
             }
         }
 
+        if(Input.GetKeyDown(KeyCode.S))
+        {
+            _listCromosomes[currentBestCar].GetNeuralNetwork().WriteToFile(_nameBest);
+        }
+
+        WriteInfo();
     }
 
     private void WriteInfo()
@@ -99,6 +106,10 @@ public class GeneticAlg : MonoBehaviour
             go.transform.parent = this.transform;
             _listCromosomes.Add(go.GetComponent<Chromosome>());
             _listCromosomes[i].Init(_sizeNeuralNetwork, totalCheckPoints);
+            if (System.IO.File.Exists(_nameBest) && i % 2 == 0)
+            {
+                _listCromosomes[i].GetNeuralNetwork().ReadFromFile(_nameBest);
+            }
             _cars.Add(go);
         }
         _infoTraining = new List<car_info>();
@@ -140,8 +151,10 @@ public class GeneticAlg : MonoBehaviour
         if(_infoTraining.Count == _totalCars)
         {
             SortBestCars();
+            List<float> best = _infoTraining[0]._neuralNetwork;
             MergeCars();
             MutateCars();
+            MergeCars(best, best, 0);//first allways alive
             StartCoroutine(ResetartTraining());
         }
     }

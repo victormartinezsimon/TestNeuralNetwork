@@ -2034,7 +2034,7 @@ MonoBehaviour:
   _carToCopy: {fileID: 3347174223193345272, guid: 7dbcc3eacde9a224fa4072f13b2e651d, type: 3}
   _totalCars: 100
   _startPosition: {fileID: 1598978999}
-  randomMutation: 0.01
+  randomMutation: 0.05
   _sizeNeuralNetwork: 050000000300000002000000
   totalCheckPoints: 10
   _colorRun: {r: 0.14637871, g: 0.8679245, b: 0.12691349, a: 0}
@@ -2043,6 +2043,7 @@ MonoBehaviour:
   _colorBest: {r: 1, g: 0.9942861, b: 0.02264148, a: 0}
   maxTimeout: 5
   _textoInf: {fileID: 114935279}
+  _nameBest: ./best.txt
 --- !u!4 &1795219740
 Transform:
   m_ObjectHideFlags: 0

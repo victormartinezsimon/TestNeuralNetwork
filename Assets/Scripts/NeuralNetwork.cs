@@ -178,31 +178,34 @@ public class NeuralNetwork
     public void ReadFromFile(string filePath)
     {
         StreamReader sr = new StreamReader(filePath);
-        for (int layerIdx = 1; layerIdx < _layersSize.Count; ++layerIdx)
+        if (sr != null)
         {
-            int totalNeuronsInThisLayer = _layersSize[layerIdx];
-            int totalNeuronsInPreviousLayer = _layersSize[layerIdx - 1];
-
-            for (int neuronIdx = 0; neuronIdx < totalNeuronsInThisLayer; ++neuronIdx)
+            for (int layerIdx = 1; layerIdx < _layersSize.Count; ++layerIdx)
             {
-                for (int previousNeuronIdx = 0; previousNeuronIdx < totalNeuronsInPreviousLayer; ++previousNeuronIdx)
+                int totalNeuronsInThisLayer = _layersSize[layerIdx];
+                int totalNeuronsInPreviousLayer = _layersSize[layerIdx - 1];
+
+                for (int neuronIdx = 0; neuronIdx < totalNeuronsInThisLayer; ++neuronIdx)
                 {
-                    float value = float.Parse(sr.ReadLine());
-                    _weights[layerIdx][neuronIdx][previousNeuronIdx] = value;
+                    for (int previousNeuronIdx = 0; previousNeuronIdx < totalNeuronsInPreviousLayer; ++previousNeuronIdx)
+                    {
+                        float value = float.Parse(sr.ReadLine());
+                        _weights[layerIdx][neuronIdx][previousNeuronIdx] = value;
+                    }
                 }
             }
-        }
 
-        for (int layerIdx = 0; layerIdx < _layersSize.Count; ++layerIdx)
-        {
-
-            for (int biaseIdx = 0; biaseIdx < _layersSize[layerIdx]; ++biaseIdx)
+            for (int layerIdx = 0; layerIdx < _layersSize.Count; ++layerIdx)
             {
-                _biases[layerIdx][biaseIdx] = float.Parse(sr.ReadLine());
-            }
-        }
 
-        sr.Close();
+                for (int biaseIdx = 0; biaseIdx < _layersSize[layerIdx]; ++biaseIdx)
+                {
+                    _biases[layerIdx][biaseIdx] = float.Parse(sr.ReadLine());
+                }
+            }
+
+            sr.Close();
+        }
     }
 
 
