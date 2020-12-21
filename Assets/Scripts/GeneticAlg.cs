@@ -6,15 +6,11 @@ using UnityEngine.UI;
 
 public class GeneticAlg : MonoBehaviour
 {
+    [Header("Elementos no configurables")]
     [SerializeField]
     private GameObject _carToCopy;
     [SerializeField]
-    private int _totalCars;
-    [SerializeField]
     private Transform _startPosition;
-    [SerializeField]
-    [Range(0.001f, 0.2f)]
-    public float _randomMutation = 0.1f;
     [SerializeField]
     private List<int> _sizeNeuralNetwork;
     [SerializeField]
@@ -23,14 +19,16 @@ public class GeneticAlg : MonoBehaviour
     private Color _colorStopped;
     [SerializeField]
     private Color _notSelected;
-    [SerializeField]
-    private int _maxTimeout = 5;
+    
     [SerializeField]
     private Text _textoInformation;
     [SerializeField]
     private string _nameBest = "./best.txt";
-    [SerializeField]
-    [Range(0.1f, 0.9f)]
+
+    //Elementos configurables
+    private int _totalCars;
+    public float _randomMutation = 0.1f;
+    private int _maxTimeout = 5;
     private float _randomRepeatBest = 0.5f;
 
     private List<GameObject> _cars;
@@ -54,6 +52,7 @@ public class GeneticAlg : MonoBehaviour
     void Start()
     {
         UnityEngine.Random.InitState(System.DateTime.Now.Millisecond);//init random
+        LoadConfiguration();
         CreateCars();
         ResetCars();
         StartTraining();
@@ -70,6 +69,16 @@ public class GeneticAlg : MonoBehaviour
         }
         WriteInfo();
     }
+
+    private void LoadConfiguration()
+    {
+        ConfigurationManager cm = ConfigurationManager.GetInstance();
+        _totalCars = cm.TotalCars;
+        _randomMutation = cm.RandomMutation;
+        _maxTimeout = cm.Timeout;
+        _randomRepeatBest = cm.RandomRepeatBest;
+    }
+
 
     /// <summary>
     /// Update the variables so the best car will be saved when the current training end
