@@ -19,6 +19,8 @@ public class GeneticAlg : MonoBehaviour
     private Color _colorStopped;
     [SerializeField]
     private Color _notSelected;
+    [SerializeField]
+    private int _marginBest = 4;
     
     [SerializeField]
     private Text _textoInformation;
@@ -36,12 +38,12 @@ public class GeneticAlg : MonoBehaviour
     private int _currentBestCar = -1;
     private Mutex _mutex = new Mutex();
     private bool _writeBestCarToText = false;
-    private float _timeStartTimeOut;
+    private float _timeStartTraining;
 
     private struct car_info{
         public int id;
         public List<float> _neuralNetwork;
-        public int _score;
+        public float _score;
         public long _time;
         public float _scoreAcum;
         public void SetScoreAcum(float v) { _scoreAcum = v; }
@@ -60,7 +62,7 @@ public class GeneticAlg : MonoBehaviour
 
     private void Update()
     {
-        if(Time.time > _timeStartTimeOut + _maxTimeout || Input.GetKeyDown(KeyCode.E))
+        if(Time.time > _timeStartTraining + _maxTimeout || Input.GetKeyDown(KeyCode.E))
         {
             for(int car = 0; car < _totalCars; ++car)
             {
@@ -98,26 +100,18 @@ public class GeneticAlg : MonoBehaviour
 
         for(int car = 0; car < _totalCars; ++car)
         {
-            if (_listCromosomes[car]._score > bestDistance)
+            if (_listCromosomes[car]._totalDistance > bestDistance)
             {
                 bestIdx = car;
-                bestDistance = _listCromosomes[car]._score;
+                bestDistance = _listCromosomes[car]._totalDistance;
             }
         }
         if(bestIdx != _currentBestCar)
         {
             _currentBestCar = bestIdx;
-            _timeStartTimeOut = Time.time;
-        }
-        else
-        {
-            if(_listCromosomes[_currentBestCar].running)
-            {
-                _timeStartTimeOut = Time.time;
-            }
         }
 
-        _textoInformation.text = "best car[" + bestIdx + "] => " + bestDistance + " timeout: "+ (int)(Time.time - _timeStartTimeOut);
+        _textoInformation.text = "best car[" + bestIdx + "] => " + bestDistance + " timeout: "+ (int)(Time.time - _timeStartTraining);
     }
 
     /// <summary>
@@ -170,7 +164,7 @@ public class GeneticAlg : MonoBehaviour
             _cars[i].GetComponent<Renderer>().material.color = _colorRunning;
             _listCromosomes[i].RunAgent(i);
         }
-        _timeStartTimeOut = Time.time;
+        _timeStartTraining = Time.time;
         _writeBestCarToText = false;
     }
 
@@ -180,11 +174,11 @@ public class GeneticAlg : MonoBehaviour
     /// <param name="score"></param>
     /// <param name="time"></param>
     /// <param name="id"></param>
-    public void TaskEnded(int score, long time, int id)
+    public void TaskEnded(long time, int id, float distance)
     {
         car_info it = new car_info();
         it.id = id;
-        it._score = score;
+        it._score = distance;
         it._time = time;
 
         it._neuralNetwork = new List<float>(_listCromosomes[id].GetNeuralNetwork().ToList());
@@ -239,24 +233,23 @@ public class GeneticAlg : MonoBehaviour
     {
         _infoTraining.Sort((ci1, ci2) =>
         {
-            if(ci1._score.CompareTo(ci2._score) == 0)
-            {
-                return ci1._time.CompareTo(ci2._time);
-            }
-            return ci1._score.CompareTo(ci2._score);
+           if(ci1._score.CompareTo(ci2._score) == 0)
+           {
+               return ci1._time.CompareTo(ci2._time);
+           }
+           return ci1._score.CompareTo(ci2._score);
         }
         );
 
         _infoTraining.Reverse();
 
-        int bestScore = _infoTraining[0]._score;
-        
+        float bestScore = _infoTraining[0]._score;
 
         int totalCarsToAnalyze = 0;
 
         for(int i = 0; i < _totalCars; ++i)
         {
-            if(_infoTraining[i]._score < bestScore -1)
+            if(_infoTraining[i]._score < bestScore - _marginBest)
             {
                 break;
             }

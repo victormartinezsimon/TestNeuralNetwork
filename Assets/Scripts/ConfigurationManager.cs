@@ -20,7 +20,7 @@ public class ConfigurationManager : MonoBehaviour
 
     public int TotalCars { get { return _totalCars; } set { _totalCars = value; } }
     public float RandomMutation { get { return _randomMutation; } set { _randomMutation = value; } }
-    public int Timeout { get { return _maxTimeout; } set { _randomMutation = value; } }
+    public int Timeout { get { return _maxTimeout; } set { _maxTimeout = value; } }
     public float RandomRepeatBest { get { return _randomRepeatBest; }set { _randomRepeatBest = value; } }
 
 

@@ -304,7 +304,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 5
+  m_Text: 15
 --- !u!222 &55606106
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -665,7 +665,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: '0.1
+  m_Text: '0.05
 
 '
 --- !u!222 &173226141
@@ -720,8 +720,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _totalCars: 100
-  _randomMutation: 0.1
-  _maxTimeout: 5
+  _randomMutation: 0.05
+  _maxTimeout: 15
   _randomRepeatBest: 0.5
 --- !u!1 &323287967
 GameObject:
@@ -1593,7 +1593,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: '0.1
+  m_Text: '0.5
 
 '
 --- !u!222 &691720160
@@ -2290,10 +2290,10 @@ MonoBehaviour:
   m_FillRect: {fileID: 1280527707}
   m_HandleRect: {fileID: 1821069131}
   m_Direction: 0
-  m_MinValue: 1
-  m_MaxValue: 10
+  m_MinValue: 5
+  m_MaxValue: 30
   m_WholeNumbers: 1
-  m_Value: 5
+  m_Value: 15
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
@@ -2432,7 +2432,7 @@ MonoBehaviour:
   m_MinValue: 0
   m_MaxValue: 1
   m_WholeNumbers: 0
-  m_Value: 0.1
+  m_Value: 0.5
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
@@ -2879,7 +2879,7 @@ MonoBehaviour:
   m_MinValue: 0.001
   m_MaxValue: 0.2
   m_WholeNumbers: 0
-  m_Value: 0.1
+  m_Value: 0.05
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:

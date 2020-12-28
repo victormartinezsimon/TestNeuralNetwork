@@ -109,9 +109,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9a1e535cb2124ea45a8ec7ba900a41aa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _distanceRay: 5
-  rotationMultiplier: 0.5
+  _distanceRay: 4
+  rotationMultiplier: 1
   speed: 0.1
+  _paintRays: 0
   running: 0
   _score: 0
 --- !u!54 &-5217680519864702218

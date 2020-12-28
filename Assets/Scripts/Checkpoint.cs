@@ -6,4 +6,6 @@ public class Checkpoint : MonoBehaviour
 {
     public GameObject previous;
     public GameObject next;
+    public bool _startCheckpoint;
+    public bool _endCheckPoint;
 }
